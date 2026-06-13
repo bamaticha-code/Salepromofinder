@@ -320,6 +320,12 @@ input[type=number]{
   color:var(--ink);
 }
 input[type=number]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+
+.cust-input{
+  width:90px; font-family:'Kanit',sans-serif; font-weight:700; font-size:14px;
+  color:var(--accent); border:1.5px solid var(--accent); border-radius:6px;
+  padding:1px 4px; background:#fff;
+}
 </style>
 </head>
 <body>
@@ -364,12 +370,11 @@ input[type=number]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
     </div>
   </div>
   <div class="select-row" style="margin-top:6px;">
-    <label for="extraDownInput">ลูกค้าวางดาวน์เพิ่ม (บาท) — ถ้ามี (จะลดยอดจัด/งวดผ่อนลง)</label>
-    <input type="number" id="extraDownInput" min="0" step="1000" placeholder="0" inputmode="numeric">
-  </div>
-  <div class="select-row" style="margin-top:6px;">
     <label for="minorInstallmentInput">งวดย่อยรายเดือน (บาท) — 11 เดือน ก่อนงวดใหญ่</label>
     <input type="number" id="minorInstallmentInput" min="0" step="500" value="2000" inputmode="numeric">
+  </div>
+  <div class="select-row" style="margin-top:2px;">
+    <div style="font-size:10.5px;color:var(--ink-soft);">แก้ไขตัวเลข "ลูกค้าออกเอง" ในการ์ดที่แนะนำได้ ถ้าลูกค้าต้องการวางดาวน์เพิ่ม</div>
   </div>
 </div>
 
@@ -449,7 +454,6 @@ const priceValue = document.getElementById('priceValue');
 const summarySupport = document.getElementById('summarySupport');
 const summaryCust = document.getElementById('summaryCust');
 const results = document.getElementById('results');
-const extraDownInput = document.getElementById('extraDownInput');
 const minorInstallmentInput = document.getElementById('minorInstallmentInput');
 
 const TOGGLE_DEFS = {
@@ -536,7 +540,7 @@ function findEntries(brand, model, segment, toggles){
 }
 
 // ===== shared card rendering =====
-function cardHtml(r, badge, compareTo){
+function cardHtml(r, badge, compareTo, editable){
   const e = r.entry;
   const down = e.down || 0;
 
@@ -598,6 +602,14 @@ function cardHtml(r, badge, compareTo){
   const totalChip = `<span class="chip">ยอดจัด <b>${fmt(Math.round(finTotal))}</b></span>`;
   const paymentChip = `<span class="chip">ผ่อน <b>${finYears} ปี</b> @ <b>${fmtPct(finInterest)}</b> · งวดใหญ่ <b>${fmt(Math.round(bigPayment))}</b> บาท/ปี + งวดย่อย <b>${fmt(minor)}</b> บาท × 11 เดือน</span>`;
 
+  let savingsChip = '';
+  if(extra>0){
+    const finAnnualBase = finTotalBase * (1/finYears + finInterest);
+    const bigPaymentBase = Math.max(0, finAnnualBase - minor*11);
+    const saved = bigPaymentBase - bigPayment;
+    savingsChip = `<span class="chip">วางเพิ่ม <b>${fmt(extra)}</b> บาท → งวดใหญ่ลดลง <b>${fmt(Math.round(saved))}</b> บาท/ปี (จากเดิม ${fmt(Math.round(bigPaymentBase))} บาท/ปี)</span>`;
+  }
+
   return `
     <div class="card ${badge?'best':''}">
       ${badge ? `<div class="best-badge">${badge}</div>` : ''}
@@ -611,7 +623,7 @@ function cardHtml(r, badge, compareTo){
       <div class="numbers">
         <div class="num-box cust full"><div class="k">ส่วนสนับสนุนรวม (ลูกค้าได้รับ)</div><div class="v">${fmt(totalSupport)} บาท${supportDelta}</div></div>
         <div class="num-box"><div class="k">เงินดาวน์รวม</div><div class="v">${fmt(downDisp)}${extra>0 ? `<div class="vv">(เดิม ${fmt(down)} + วางเพิ่ม ${fmt(extra)})</div>` : ''}</div></div>
-        <div class="num-box"><div class="k">ลูกค้าออกเอง</div><div class="v">${fmt(cust)}${custDelta}</div></div>
+        <div class="num-box"><div class="k">ลูกค้าออกเอง</div><div class="v">${editable ? `<input type="text" inputmode="numeric" pattern="[0-9]*" class="cust-input" id="custOutInput" data-base="${e.customer_out??0}" value="${cust}">` : fmt(cust)}${custDelta}</div></div>
         <div class="num-box"><div class="k">ต้นทุน RST (บริษัท)</div><div class="v">${fmt(rst)}${rstDelta}</div></div>
       </div>
       <div class="breakdown">
@@ -621,6 +633,7 @@ function cardHtml(r, badge, compareTo){
         ${e.fire ? `<span class="chip">Pro ไฟไหม้ <b>${fmt(e.fire)}</b></span>`:''}
         ${totalChip}
         ${paymentChip}
+        ${savingsChip}
       </div>
       ${detailsBlock}
     </div>`;
@@ -703,13 +716,29 @@ function renderResultsCommon(rawRows, model){
     summaryCust.textContent = '-';
   }
 
-  let html = cardHtml(best, 'แนะนำสำหรับกลุ่มนี้');
+  let html = cardHtml(best, 'แนะนำสำหรับกลุ่มนี้', null, true);
   if(rest.length>0){
     html += `<details class="more-toggle"><summary class="more-summary">ดูโปรอื่นสำหรับกลุ่มนี้ (${rest.length})</summary>
       <div class="more-cards">${rest.map(r=>cardHtml(r,null,best.entry)).join('')}</div>
     </details>`;
   }
   results.innerHTML = html;
+  const custInput = document.getElementById('custOutInput');
+  if(custInput){
+    custInput.addEventListener('input', ()=>{
+      const base = Number(custInput.dataset.base) || 0;
+      const digits = custInput.value.replace(/[^0-9]/g, '');
+      const val = Number(digits) || 0;
+      extraDown = Math.max(0, val - base);
+      const cursorPos = custInput.selectionStart;
+      renderResults();
+      const newInput = document.getElementById('custOutInput');
+      if(newInput){
+        newInput.focus();
+        newInput.setSelectionRange(cursorPos, cursorPos);
+      }
+    });
+  }
 }
 
 // ===== UI wiring =====
@@ -779,10 +808,6 @@ modelSelect.addEventListener('change', ()=>{
   renderResults();
 });
 
-extraDownInput.addEventListener('input', ()=>{
-  extraDown = Number(extraDownInput.value) || 0;
-  renderResults();
-});
 minorInstallmentInput.addEventListener('input', ()=>{
   minorInstallment = Number(minorInstallmentInput.value) || 0;
   renderResults();
