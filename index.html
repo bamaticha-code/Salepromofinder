@@ -307,6 +307,19 @@ details li{ margin-bottom:3px; }
 }
 .delta-good{ background:#E3F3E6; color:#2E7D32; }
 .delta-bad{ background:#FBE5E3; color:#C8372D; }
+
+input[type=number]{
+  width:100%;
+  font-family:'Kanit',sans-serif;
+  font-size:14px;
+  font-weight:600;
+  padding:8px 10px;
+  border-radius:9px;
+  border:1.5px solid var(--line);
+  background:var(--card);
+  color:var(--ink);
+}
+input[type=number]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
 </style>
 </head>
 <body>
@@ -349,6 +362,14 @@ details li{ margin-bottom:3px; }
       <div class="k">ลูกค้าออกเอง</div>
       <div class="v" id="summaryCust">-</div>
     </div>
+  </div>
+  <div class="select-row" style="margin-top:6px;">
+    <label for="extraDownInput">ลูกค้าวางดาวน์เพิ่ม (บาท) — ถ้ามี (จะลดยอดจัด/งวดผ่อนลง)</label>
+    <input type="number" id="extraDownInput" min="0" step="1000" placeholder="0" inputmode="numeric">
+  </div>
+  <div class="select-row" style="margin-top:6px;">
+    <label for="minorInstallmentInput">งวดย่อยรายเดือน (บาท) — 11 เดือน ก่อนงวดใหญ่</label>
+    <input type="number" id="minorInstallmentInput" min="0" step="500" value="2000" inputmode="numeric">
   </div>
 </div>
 
@@ -417,6 +438,8 @@ function renderCriteria(){
 
 let currentBrand = 'yanmar';
 let currentSegment = 'ทั่วไป';
+let extraDown = 0;
+let minorInstallment = 2000;
 let toggleState = {land50:false, land30:false, baac:false};
 
 const modelSelect = document.getElementById('modelSelect');
@@ -426,6 +449,8 @@ const priceValue = document.getElementById('priceValue');
 const summarySupport = document.getElementById('summarySupport');
 const summaryCust = document.getElementById('summaryCust');
 const results = document.getElementById('results');
+const extraDownInput = document.getElementById('extraDownInput');
+const minorInstallmentInput = document.getElementById('minorInstallmentInput');
 
 const TOGGLE_DEFS = {
   'ทั่วไป': [
@@ -523,17 +548,18 @@ function cardHtml(r, badge, compareTo){
       <div class="card-head"><h3>${title}</h3></div>
       ${groupLabel ? `<span class="group-tag">${groupLabel}</span>` : ''}
       <div class="numbers">
-        <div class="num-box"><div class="k">เงินดาวน์รวม</div><div class="v">${fmt(down)}</div></div>
-        <div class="num-box"><div class="k">YCT</div><div class="v">${fmt(e.yct)}</div></div>
+        <div class="num-box"><div class="k">เงินดาวน์รวม</div><div class="v">${fmt(down + (Math.max(0,Number(extraDown)||0)))}</div></div>
         <div class="num-box"><div class="k">YSP</div><div class="v">${fmt(e.ysp)}</div></div>
       </div>
     </div>`;
   }
 
-  const cust = e.customer_out ?? 0;
+  const extra = Math.max(0, Number(extraDown) || 0);
+  const cust = (e.customer_out ?? 0) + extra;
+  const downDisp = down + extra;
   const support = (e.ysp||0)+(e.yct||0)+(e.fire||0)+(e.ysp_topup||0);
   const rst = e.rst ?? 0;
-  const totalSupport = down - cust;
+  const totalSupport = down - (e.customer_out ?? 0);
 
   let custDelta = '', supportDelta = '', rstDelta = '';
   if(compareTo){
@@ -546,10 +572,10 @@ function cardHtml(r, badge, compareTo){
   }
 
   let custPct=0, suppPct=0, rstPct=0;
-  if(down>0){
-    custPct = Math.max(0, cust)/down*100;
-    suppPct = Math.max(0, support)/down*100;
-    rstPct = Math.max(0, Math.min(100-custPct-suppPct, (rst/down*100)));
+  if(downDisp>0){
+    custPct = Math.max(0, cust)/downDisp*100;
+    suppPct = Math.max(0, support)/downDisp*100;
+    rstPct = Math.max(0, Math.min(100-custPct-suppPct, (rst/downDisp*100)));
     if(rstPct<0) rstPct = 0;
   }
 
@@ -560,13 +586,17 @@ function cardHtml(r, badge, compareTo){
   const noteItem = e.note ? `<li>${e.note}</li>` : '';
   const detailsBlock = (condItems || noteItem) ? `<details><summary></summary><ul>${condItems}${noteItem}</ul></details>` : '';
 
-  const finTotal = e.total ?? Math.max(0, (e.price||0) - down);
+  const finTotalBase = e.total ?? Math.max(0, (e.price||0) - down);
+  const finTotal = Math.max(0, finTotalBase - extra);
   const finYears = e.years ?? (currentBrand==='yanmar' ? 10 : 7);
   const finInterest = e.interest ?? 0.0895;
-  const finAnnual = e.annual ?? (finTotal * (1/finYears + finInterest));
+  const finAnnual = finTotal * (1/finYears + finInterest);
+
+  const minor = Math.max(0, Number(minorInstallment) || 0);
+  const bigPayment = Math.max(0, finAnnual - minor*11);
 
   const totalChip = `<span class="chip">ยอดจัด <b>${fmt(Math.round(finTotal))}</b></span>`;
-  const paymentChip = `<span class="chip">ผ่อน <b>${finYears} ปี</b> @ <b>${fmtPct(finInterest)}</b> · <b>${fmt(Math.round(finAnnual))}</b> บาท/ปี</span>`;
+  const paymentChip = `<span class="chip">ผ่อน <b>${finYears} ปี</b> @ <b>${fmtPct(finInterest)}</b> · งวดใหญ่ <b>${fmt(Math.round(bigPayment))}</b> บาท/ปี + งวดย่อย <b>${fmt(minor)}</b> บาท × 11 เดือน</span>`;
 
   return `
     <div class="card ${badge?'best':''}">
@@ -580,7 +610,7 @@ function cardHtml(r, badge, compareTo){
       </div>
       <div class="numbers">
         <div class="num-box cust full"><div class="k">ส่วนสนับสนุนรวม (ลูกค้าได้รับ)</div><div class="v">${fmt(totalSupport)} บาท${supportDelta}</div></div>
-        <div class="num-box"><div class="k">เงินดาวน์รวม</div><div class="v">${fmt(down)}</div></div>
+        <div class="num-box"><div class="k">เงินดาวน์รวม</div><div class="v">${fmt(downDisp)}${extra>0 ? `<div class="vv">(เดิม ${fmt(down)} + วางเพิ่ม ${fmt(extra)})</div>` : ''}</div></div>
         <div class="num-box"><div class="k">ลูกค้าออกเอง</div><div class="v">${fmt(cust)}${custDelta}</div></div>
         <div class="num-box"><div class="k">ต้นทุน RST (บริษัท)</div><div class="v">${fmt(rst)}${rstDelta}</div></div>
       </div>
@@ -596,7 +626,7 @@ function cardHtml(r, badge, compareTo){
     </div>`;
 }
 
-function dedupeWithinSameCustomerOut(rows){
+function dedupeWithinSameCustomerOut(rows, model){
   // Hide B if another option A is at least as good on ALL THREE of:
   //  - "ลูกค้าออก" (lower is better)
   //  - "ส่วนสนับสนุนรวม" = เงินดาวน์ - ลูกค้าออก (higher is better)
@@ -606,6 +636,9 @@ function dedupeWithinSameCustomerOut(rows){
   const pending = rows.filter(r=>r.entry.pending);
   const usable = rows.filter(r=>!r.entry.pending);
   const kept = usable.filter(r=>{
+    // Special case: YM358R's baseline ทั่วไป20% stays visible as a fallback option
+    // (e.g. customer's land doesn't qualify for the 25%+ programs), even if dominated.
+    if(model==='YM358R' && r.program.id==='y_general') return true;
     const cust = r.entry.customer_out ?? 0;
     const support = (r.entry.down ?? 0) - cust;
     const rst = r.entry.rst ?? 0;
@@ -643,7 +676,7 @@ function pickBestAndRest(rows){
   return {best, rest};
 }
 
-function renderResultsCommon(rawRows){
+function renderResultsCommon(rawRows, model){
   let rows = rawRows;
   const priceRow = rows.find(r=>typeof r.entry.price==='number' && r.entry.price>0);
   const price = priceRow ? priceRow.entry.price : 0;
@@ -656,7 +689,7 @@ function renderResultsCommon(rawRows){
     return;
   }
 
-  rows = dedupeWithinSameCustomerOut(rows);
+  rows = dedupeWithinSameCustomerOut(rows, model);
   const {best, rest} = pickBestAndRest(rows);
 
   if(!best.entry.pending && price>0){
@@ -725,7 +758,7 @@ function renderToggles(){
 function renderResults(){
   const model = modelSelect.value;
   const rows = findEntries(currentBrand, model, currentSegment, toggleState);
-  renderResultsCommon(rows);
+  renderResultsCommon(rows, model);
 }
 
 document.querySelectorAll('.brand-btn').forEach(b=>{
@@ -743,6 +776,15 @@ segmentToggle.querySelectorAll('.seg-btn').forEach(b=>{
 modelSelect.addEventListener('change', ()=>{
   toggleState = {land50:false, land30:false, baac:false};
   renderToggles();
+  renderResults();
+});
+
+extraDownInput.addEventListener('input', ()=>{
+  extraDown = Number(extraDownInput.value) || 0;
+  renderResults();
+});
+minorInstallmentInput.addEventListener('input', ()=>{
+  minorInstallment = Number(minorInstallmentInput.value) || 0;
   renderResults();
 });
 
