@@ -389,14 +389,36 @@ input[type=number]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
 .eq-result .eq-r-value{ font-family:'Kanit',sans-serif; font-weight:700; font-size:15px; color:#1e4d1e; }
 .eq-result .eq-r-detail{ font-size:11px; color:#4a7a4a; margin-top:3px; }
 .eq-none{ font-size:12px; color:var(--ink-soft); font-style:italic; }
+
+/* ===== Mobile Step Flow ===== */
+.view-promo-btn{
+  display:none;
+  width:100%; margin-top:12px;
+  background:var(--accent); color:#fff; border:none;
+  font-family:'Kanit',sans-serif; font-size:16px; font-weight:700;
+  padding:13px; border-radius:12px; cursor:pointer;
+  box-shadow:0 3px 12px -3px rgba(0,0,0,.2);
+}
+.back-btn{
+  display:none;
+  background:var(--card); border:1.5px solid var(--line);
+  font-family:'Kanit',sans-serif; font-size:13px; font-weight:600;
+  color:var(--ink-soft); padding:7px 14px; border-radius:9px;
+  cursor:pointer; margin-bottom:10px;
+}
+@media (max-width:759px){
+  .view-promo-btn{ display:block; }
+  .app.step2 .topbar{ display:none; }
+  .app.step2 #mainPanel #backBtn{ display:block; }
+}
 </style>
 </head>
 <body>
 
 <div class="app">
-<div class="topbar">
+<div class="topbar" id="topbar">
   <h1>โปรไหนเหมาะ? — RST Promo Finder</h1>
-  <div class="sub">เลือกรุ่นรถ → เลือกกลุ่มลูกค้า → ดูโปรที่สนับสนุนดีที่สุด</div>
+  <div class="sub" id="topbarSub">เลือกรุ่นรถ → เลือกกลุ่มลูกค้า → ดูโปรที่สนับสนุนดีที่สุด</div>
   <div class="brand-toggle">
     <button class="brand-btn yanmar active" data-brand="yanmar">Yanmar</button>
     <button class="brand-btn solis" data-brand="solis">Solis</button>
@@ -439,9 +461,11 @@ input[type=number]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
   <div class="select-row" style="margin-top:2px;">
     <div style="font-size:10.5px;color:var(--ink-soft);">แก้ไขตัวเลข "ลูกค้าออกเอง" ในการ์ดที่แนะนำได้ ถ้าลูกค้าต้องการวางดาวน์เพิ่ม</div>
   </div>
+  <button id="viewPromoBtn" class="view-promo-btn" onclick="goToResults()">ดูโปร ▶</button>
 </div>
 
-<main>
+<main id="mainPanel">
+  <button id="backBtn" class="back-btn" onclick="goToForm()" style="display:none">← แก้ไขการเลือก</button>
   <div class="legend">
     <span><i style="background:var(--accent)"></i>ลูกค้าจ่ายเอง (ลูกค้าออก)</span>
     <span><i style="background:var(--support)"></i>ส่วนสนับสนุน (YCT/YSP/ไฟไหม้)</span>
@@ -908,6 +932,22 @@ minorInstallmentInput.addEventListener('input', ()=>{
 // ===== Equipment Section =====
 let selectedEqSet = {}; // {idx: useSpecial}
 let eqDown = 0;
+
+
+function goToResults(){
+  document.querySelector('.app').classList.add('step2');
+  window.scrollTo(0,0);
+}
+function goToForm(){
+  document.querySelector('.app').classList.remove('step2');
+  window.scrollTo(0,0);
+}
+function maybeAutoStep2(){
+  if(window.innerWidth < 760){
+    document.querySelector('.app').classList.add('step2');
+    window.scrollTo(0,0);
+  }
+}
 
 function getEquipmentForModel(brand, model){
   const map = EQUIPMENT[brand];
