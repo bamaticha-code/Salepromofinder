@@ -236,15 +236,12 @@ details[open] summary::after{ content:'▴'; }
 details ul{ margin:6px 0 0; padding-left:18px; }
 details li{ margin-bottom:3px; }
 
-.more-toggle{ margin-top:2px; }
-.more-toggle summary.more-summary{
+.more-summary{
   cursor:pointer; font-family:'Kanit',sans-serif; font-size:13px; font-weight:600;
-  color:var(--ink-soft); list-style:none; outline:none; padding:8px 4px; text-align:center;
+  color:var(--ink-soft); padding:8px 4px; text-align:center; width:100%;
   border:1.5px dashed var(--line); border-radius:10px; margin-bottom:10px;
+  background:transparent; display:block;
 }
-.more-toggle summary.more-summary::before{ content:''; }
-.more-toggle summary.more-summary::after{ content:' \25be'; }
-.more-toggle[open] summary.more-summary::after{ content:' \25b4'; }
 .more-cards .card{ opacity:.9; }
 
 .empty{
@@ -409,7 +406,25 @@ input[type=number]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
 @media (max-width:759px){
   .view-promo-btn{ display:block; }
   .app.step2 .topbar{ display:none; }
-  .app.step2 #mainPanel #backBtn{ display:block; }
+  .app.step2 #mainPanel #backBar{ display:flex !important; align-items:center; }
+}
+
+.eq-scroll-btn{
+  position:fixed; bottom:16px; right:16px; z-index:100;
+  background:var(--ink); color:#fff;
+  font-family:'Kanit',sans-serif; font-size:13px; font-weight:700;
+  padding:10px 16px; border-radius:20px; border:none; cursor:pointer;
+  box-shadow:0 3px 14px -3px rgba(0,0,0,.35);
+  display:none;
+}
+@media (min-width:760px){
+  .eq-scroll-btn{ display:none !important; }
+}
+.back-btn{
+  background:var(--card); border:1.5px solid var(--line);
+  font-family:'Kanit',sans-serif; font-size:13px; font-weight:600;
+  color:var(--ink-soft); padding:7px 14px; border-radius:9px;
+  cursor:pointer; margin-bottom:10px;
 }
 </style>
 </head>
@@ -465,17 +480,19 @@ input[type=number]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
 </div>
 
 <main id="mainPanel">
-  <button id="backBtn" class="back-btn" onclick="goToForm()" style="display:none">← แก้ไขการเลือก</button>
+  <div id="backBar" style="display:none; margin-bottom:8px; display:none"><button class="back-btn" onclick="goToForm()">← แก้ไขการเลือก</button><span id="backSummary" style="font-size:12px;color:var(--ink-soft);margin-left:8px"></span></div>
   <div class="legend">
     <span><i style="background:var(--accent)"></i>ลูกค้าจ่ายเอง (ลูกค้าออก)</span>
     <span><i style="background:var(--support)"></i>ส่วนสนับสนุน (YCT/YSP/ไฟไหม้)</span>
     <span><i style="background:var(--rst)"></i>ต้นทุน RST (บริษัทรับภาระ)</span>
   </div>
   <div id="results"></div>
+  <div id="eqAnchor" style="scroll-margin-top:8px"></div>
   <div id="equipmentSection"></div>
   <div class="footer-note">
     <b>ข้อมูลจากไฟล์โปรโมชั่น Yanmar อัปเดต / Solis ณ 15 ต.ค. 68</b> — YF,SW = ลูกค้าที่มีรถแทรกเตอร์ Yanmar อยู่แล้ว, RT = ลูกค้าชั้นดี Yanmar (เกณฑ์นี้ใช้เหมือนกันทุกโปรของ Yanmar) ส่วนเงื่อนไข "พื้นที่ทำกิน" และ "ลูกค้าชั้นดีธกส/ผู้นำชุมชน" เป็นคำถามเพิ่มที่ปลดล็อกโปรพิเศษ — แท่งสีคือสัดส่วนของเงินดาวน์รวมในแต่ละโปร
   </div>
+  <button id="eqScrollBtn" class="eq-scroll-btn" onclick="scrollToEq()" style="display:none">🔧 อุปกรณ์ ▼</button>
 </main>
 </div>
 
@@ -830,14 +847,14 @@ function renderResultsCommon(rawRows, model){
 
   let html = cardHtml(best, 'แนะนำสำหรับกลุ่มนี้', null, true);
   if(rest.length>0){
-    html += `<details class="more-toggle"><summary class="more-summary">ดูโปรอื่นสำหรับกลุ่มนี้ (${rest.length})</summary>
-      <div class="more-cards">${rest.map(r=>cardHtml(r,null,best.entry)).join('')}</div>
-    </details>`;
+    const _mid = 'mc_' + Date.now();
+    html += `<button class="more-summary" id="moreBtn_${_mid}" onclick="toggleMore('${_mid}')">ดูโปรอื่นสำหรับกลุ่มนี้ (${rest.length}) ▾</button><div class="more-cards" id="${_mid}" style="display:none">${rest.map(r=>cardHtml(r,null,best.entry)).join('')}</div>`;
   }
   results.innerHTML = html;
   // render equipment with params from best card
   const _fi = getCurrentFinParams();
   renderEquipment(currentBrand, modelSelect.value, _fi.interest, _fi.years);
+  updateEqScrollBtn();
   const custInput = document.getElementById('custOutInput');
   if(custInput){
     custInput.addEventListener('input', ()=>{
@@ -934,8 +951,36 @@ let selectedEqSet = {}; // {idx: useSpecial}
 let eqDown = 0;
 
 
+
+function scrollToEq(){
+  document.getElementById('eqAnchor').scrollIntoView({behavior:'smooth'});
+}
+function updateEqScrollBtn(){
+  const btn = document.getElementById('eqScrollBtn');
+  if(!btn) return;
+  const eq = document.getElementById('equipmentSection');
+  const hasEq = eq && eq.innerHTML.trim().length > 0;
+  btn.style.display = (hasEq && window.innerWidth < 760) ? 'block' : 'none';
+}
+
+function toggleMore(id){
+  const el = document.getElementById(id);
+  const btn = document.getElementById('moreBtn_' + id);
+  const open = el.style.display === 'none';
+  el.style.display = open ? 'block' : 'none';
+  btn.innerHTML = open
+    ? btn.innerHTML.replace('▾','▴')
+    : btn.innerHTML.replace('▴','▾');
+  if(open) setTimeout(()=> el.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+}
+
 function goToResults(){
   document.querySelector('.app').classList.add('step2');
+  const model = document.getElementById('modelSelect').value;
+  const seg = currentSegment;
+  const brand = currentBrand === 'yanmar' ? 'Yanmar' : 'Solis';
+  const sum = document.getElementById('backSummary');
+  if(sum) sum.textContent = brand + ' · ' + model + ' · ' + seg;
   window.scrollTo(0,0);
 }
 function goToForm(){
@@ -944,8 +989,7 @@ function goToForm(){
 }
 function maybeAutoStep2(){
   if(window.innerWidth < 760){
-    document.querySelector('.app').classList.add('step2');
-    window.scrollTo(0,0);
+    goToResults();
   }
 }
 
