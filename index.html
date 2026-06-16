@@ -1086,8 +1086,8 @@ function renderEquipment(brand, model, finInterest, finYears){
   const downHtml = anySelected ? `
     <div class="eq-down-row">
       <label>ดาวน์อุปกรณ์รวม (บาท):</label>
-      <input type="number" id="eqDownInput" min="0" step="1000" placeholder="0" value="${eqDown}"
-        oninput="eqDown=Number(this.value)||0; rerenderEq();">
+      <input type="text" inputmode="numeric" pattern="[0-9]*" id="eqDownInput" placeholder="0" value="${eqDown}"
+        oninput="eqDown=Number(this.value.replace(/[^0-9]/g,''))||0; const pos=this.selectionStart; rerenderEq(); const ni=document.getElementById('eqDownInput'); if(ni){ni.focus();ni.setSelectionRange(pos,pos);}">
     </div>` : '';
 
   eqSection.innerHTML = `<div class="eq-section">
