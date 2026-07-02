@@ -11,8 +11,8 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'G-1G42D485D0');
-  
-</script>
+
+<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8">
@@ -480,13 +480,166 @@ input[type=number]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
   background:rgba(0,0,0,.04); border-radius:4px; padding:1px 4px; margin-left:3px;
 }
 .fin-btn.active .fin-preview{ color:#fff; background:rgba(255,255,255,.25); }
+
+/* ===== Step 3: Customer Info + Export ===== */
+.export-panel{
+  background:var(--card); border-radius:14px; padding:16px;
+  border:1.5px solid var(--line); margin-top:0;
+}
+.export-panel h2{
+  font-size:16px; font-weight:700; color:var(--ink); margin:0 0 12px;
+}
+.field-group{ margin-bottom:10px; }
+.field-group label{ font-size:11px; color:var(--ink-soft); display:block; margin-bottom:3px; }
+.field-group input, .field-group textarea{
+  width:100%; font-family:'Kanit',sans-serif; font-size:14px; font-weight:500;
+  padding:8px 10px; border-radius:9px; border:1.5px solid var(--line);
+  background:#fff; color:var(--ink); box-sizing:border-box;
+}
+.field-group textarea{ resize:vertical; min-height:56px; }
+.field-group input:focus, .field-group textarea:focus{ outline:2px solid var(--accent); }
+.export-summary{
+  background:#f7f3ee; border-radius:10px; padding:12px 14px;
+  font-size:12px; margin:12px 0; border:1px solid var(--line);
+}
+.export-summary .es-row{ display:flex; justify-content:space-between; margin-bottom:4px; }
+.export-summary .es-label{ color:var(--ink-soft); }
+.export-summary .es-val{ font-weight:700; color:var(--ink); }
+.export-btns{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+.btn-pdf{
+  flex:1; background:var(--accent); color:#fff; border:none;
+  font-family:'Kanit',sans-serif; font-size:14px; font-weight:700;
+  padding:11px 0; border-radius:11px; cursor:pointer; min-width:120px;
+}
+.btn-xlsx{
+  flex:1; background:#1e7e34; color:#fff; border:none;
+  font-family:'Kanit',sans-serif; font-size:14px; font-weight:700;
+  padding:11px 0; border-radius:11px; cursor:pointer; min-width:120px;
+}
+.btn-export-back{
+  background:var(--card); border:1.5px solid var(--line);
+  font-family:'Kanit',sans-serif; font-size:13px; font-weight:600;
+  color:var(--ink-soft); padding:10px 16px; border-radius:9px; cursor:pointer;
+}
+.btn-export{
+  width:100%; background:var(--accent); color:#fff; border:none;
+  font-family:'Kanit',sans-serif; font-size:15px; font-weight:700;
+  padding:13px; border-radius:12px; cursor:pointer; margin-top:10px;
+  box-shadow:0 3px 12px -3px rgba(0,0,0,.2);
+}
+
+/* Mobile: show export button in results */
+@media (max-width:759px){
+  .app.step2 .export-panel{ display:none; }
+  .app.step3 .topbar{ display:none; }
+  .app.step3 #mainPanel #backBar{ display:none !important; }
+  .app.step3 #mainPanel{ display:none; }
+  .app.step3 #exportPanelMobile{ display:block; }
+  #exportPanelMobile{ display:none; }
+  #showExportBtn{ display:block; }
+}
+@media (min-width:760px){
+  #showExportBtn{ display:none; }
+  #exportPanelMobile{ display:none !important; }
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  body{ background:#fff; font-family:'Sarabun',sans-serif; }
+  .app, main, .topbar, #backBar, #equipmentSection, .eq-scroll-btn,
+  #showExportBtn, #exportPanelMobile, .view-promo-btn { display:none !important; }
+  #printArea{ display:block !important; }
+  #printArea *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+}
+#printArea{ display:none; }
+
+body.printing > *:not(#printArea){ display:none !important; }
+body.printing #printArea{ display:block !important; }
+
+/* ===== History Page ===== */
+#historyPage{ display:none; }
+.app.history #historyPage{ display:block; }
+.app.history .topbar, .app.history #mainPanel,
+.app.history #exportPanelMobile{ display:none !important; }
+
+.history-topbar{
+  background:var(--card); border-bottom:1.5px solid var(--line);
+  padding:12px 16px; position:sticky; top:0; z-index:10;
+  display:flex; align-items:center; gap:10px;
+}
+.history-topbar h2{ font-size:15px; font-weight:700; margin:0; flex:1; }
+
+.history-list{ padding:12px 16px; }
+.history-card{
+  background:var(--card); border:1.5px solid var(--line); border-radius:12px;
+  padding:12px 14px; margin-bottom:10px; cursor:pointer;
+  transition:border-color .15s;
+}
+.history-card:hover{ border-color:var(--accent); }
+.history-card .hc-top{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  margin-bottom:4px;
+}
+.history-card .hc-name{ font-weight:700; font-size:14px; color:var(--ink); }
+.history-card .hc-date{ font-size:10.5px; color:var(--ink-soft); }
+.history-card .hc-model{ font-size:12px; color:var(--accent); font-weight:600; margin-bottom:3px; }
+.history-card .hc-nums{ font-size:11px; color:var(--ink-soft); }
+.history-card .hc-nums b{ color:var(--ink); }
+.history-card .hc-actions{ display:flex; gap:6px; margin-top:8px; }
+.btn-reprint{
+  font-family:'Kanit',sans-serif; font-size:12px; font-weight:600;
+  padding:5px 12px; border-radius:8px; border:1.5px solid var(--accent);
+  color:var(--accent); background:#fff; cursor:pointer;
+}
+.btn-rexport{
+  font-family:'Kanit',sans-serif; font-size:12px; font-weight:600;
+  padding:5px 12px; border-radius:8px; border:1.5px solid #1e7e34;
+  color:#1e7e34; background:#fff; cursor:pointer;
+}
+.btn-del{
+  font-family:'Kanit',sans-serif; font-size:12px; font-weight:600;
+  padding:5px 10px; border-radius:8px; border:1.5px solid #ccc;
+  color:#999; background:#fff; cursor:pointer; margin-left:auto;
+}
+.history-empty{
+  text-align:center; padding:40px 20px; color:var(--ink-soft); font-size:14px;
+}
+.history-loading{
+  text-align:center; padding:30px; color:var(--ink-soft); font-size:13px;
+}
+.gas-config{
+  background:#fffbe6; border:1.5px solid #f0c04a; border-radius:10px;
+  padding:12px 14px; margin:12px 16px;
+}
+.gas-config label{ font-size:11px; color:#7a6000; display:block; margin-bottom:3px; }
+.gas-config input{
+  width:100%; font-family:'Kanit',sans-serif; font-size:12px;
+  padding:7px 10px; border-radius:8px; border:1.5px solid #f0c04a;
+  background:#fff; box-sizing:border-box;
+}
+.btn-save-gas{
+  margin-top:6px; font-family:'Kanit',sans-serif; font-size:12px; font-weight:600;
+  padding:6px 14px; border-radius:8px; border:none;
+  background:#f0c04a; color:#7a6000; cursor:pointer;
+}
+.history-tab-btn{
+  font-family:'Kanit',sans-serif; font-size:13px; font-weight:700;
+  padding:8px 14px; border-radius:9px; border:1.5px solid var(--line);
+  background:#fff; color:var(--ink-soft); cursor:pointer; white-space:nowrap;
+}
+.history-tab-btn.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <div class="app">
 <div class="topbar" id="topbar">
-  <h1>โปรไหนเหมาะ? — RST Promo Finder</h1>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h1>โปรไหนเหมาะ? — RST Promo Finder</h1>
+    <button onclick="openHistory()" style="font-family:'Kanit',sans-serif;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;white-space:nowrap">📋 ประวัติ</button>
+  </div>
   <div class="sub" id="topbarSub">เลือกรุ่นรถ → เลือกกลุ่มลูกค้า → ดูโปรที่สนับสนุนดีที่สุด</div>
   <div class="brand-toggle">
     <button class="brand-btn yanmar active" data-brand="yanmar">Yanmar</button>
@@ -546,11 +699,81 @@ input[type=number]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
   <div id="results"></div>
   <div id="eqAnchor" style="scroll-margin-top:8px"></div>
   <div id="equipmentSection"></div>
+  <button id="showExportBtn" class="btn-export" onclick="goToExport()">📋 ออกใบสรุป ▶</button>
+  <div class="export-panel" id="exportPanelDesktop">
+    <h2>📋 ส่งออกใบสรุป</h2>
+    <div class="field-group">
+      <label>ชื่อลูกค้า</label>
+      <input type="text" id="custName" placeholder="เช่น นายสมชาย ใจดี">
+    </div>
+    <div class="field-group">
+      <label>ที่อยู่</label>
+      <textarea id="custAddr" placeholder="บ้านเลขที่ / หมู่บ้าน / ตำบล / อำเภอ / จังหวัด"></textarea>
+    </div>
+    <div class="field-group">
+      <label>เบอร์โทร</label>
+      <input type="text" id="custPhone" placeholder="0xx-xxx-xxxx" inputmode="tel">
+    </div>
+    <div class="field-group">
+      <label>สาขา</label>
+      <input type="text" id="branchName" placeholder="เช่น สาขาศรีสะเกษ">
+    </div>
+    <div id="exportSummaryBox"></div>
+    <div class="export-btns">
+      <button class="btn-pdf" onclick="exportPDF()">🖨 พิมพ์ / PDF</button>
+      <button class="btn-xlsx" onclick="exportXLSX()">📊 Excel</button>
+    </div>
+  </div>
   <div class="footer-note">
     <b>ข้อมูลจากไฟล์โปรโมชั่น Yanmar อัปเดต / Solis ณ 15 ต.ค. 68</b> — YF,SW = ลูกค้าที่มีรถแทรกเตอร์ Yanmar อยู่แล้ว, RT = ลูกค้าชั้นดี Yanmar (เกณฑ์นี้ใช้เหมือนกันทุกโปรของ Yanmar) ส่วนเงื่อนไข "พื้นที่ทำกิน" และ "ลูกค้าชั้นดีธกส/ผู้นำชุมชน" เป็นคำถามเพิ่มที่ปลดล็อกโปรพิเศษ — แท่งสีคือสัดส่วนของเงินดาวน์รวมในแต่ละโปร
   </div>
   <button id="eqScrollBtn" class="eq-scroll-btn" onclick="scrollToEq()" style="display:none">🔧 อุปกรณ์ ▼</button>
 </main>
+
+<div id="historyPage">
+  <div class="history-topbar">
+    <button class="back-btn" onclick="closeHistory()" style="display:block">← กลับ</button>
+    <h2>📋 ประวัติใบสรุป</h2>
+    <button class="history-tab-btn" onclick="openGasConfig()" title="ตั้งค่า GAS">⚙️</button>
+  </div>
+  <div class="gas-config" id="gasConfigBox" style="display:none">
+    <label>Google Apps Script URL (Web App URL หลัง Deploy)</label>
+    <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/xxxxxx/exec">
+    <br>
+    <button class="btn-save-gas" onclick="saveGasUrl()">บันทึก URL</button>
+  </div>
+  <div id="historyListContainer" class="history-list">
+    <div class="history-loading">กำลังโหลด...</div>
+  </div>
+</div>
+
+<div id="exportPanelMobile">
+  <div class="topbar" style="border-radius:0;border-top:none">
+    <button class="btn-export-back" onclick="goToResults()" style="margin-bottom:10px">← กลับ</button>
+    <h1>📋 ส่งออกใบสรุป</h1>
+    <div class="field-group" style="margin-top:10px">
+      <label>ชื่อลูกค้า</label>
+      <input type="text" id="custNameM" placeholder="เช่น นายสมชาย ใจดี" oninput="syncCustomer(this,'custName')">
+    </div>
+    <div class="field-group">
+      <label>ที่อยู่</label>
+      <textarea id="custAddrM" placeholder="บ้านเลขที่ / หมู่บ้าน / ตำบล / อำเภอ / จังหวัด" oninput="syncCustomer(this,'custAddr')"></textarea>
+    </div>
+    <div class="field-group">
+      <label>เบอร์โทร</label>
+      <input type="text" id="custPhoneM" placeholder="0xx-xxx-xxxx" inputmode="tel" oninput="syncCustomer(this,'custPhone')">
+    </div>
+    <div class="field-group">
+      <label>สาขา</label>
+      <input type="text" id="branchNameM" placeholder="เช่น สาขาศรีสะเกษ" oninput="syncCustomer(this,'branchName')">
+    </div>
+    <div id="exportSummaryBoxM"></div>
+    <div class="export-btns">
+      <button class="btn-pdf" onclick="exportPDF()">🖨 พิมพ์ / PDF</button>
+      <button class="btn-xlsx" onclick="exportXLSX()">📊 Excel</button>
+    </div>
+  </div>
+</div>
 </div>
 
 <script>
@@ -1005,6 +1228,7 @@ function renderResultsCommon(rawRows, model){
   }
   results.innerHTML = html;
   renderTractorSelectors();
+  refreshExportSummary();
   // render equipment with params from best card
   const _fi = getCurrentFinParams();
   renderEquipment(currentBrand, modelSelect.value, _fi.interest, _fi.years);
@@ -1146,16 +1370,19 @@ function toggleMore(id){
 }
 
 function goToResults(){
+  document.querySelector('.app').classList.remove('step3');
   document.querySelector('.app').classList.add('step2');
   const model = document.getElementById('modelSelect').value;
   const seg = currentSegment;
   const brand = currentBrand === 'yanmar' ? 'Yanmar' : 'Solis';
   const sum = document.getElementById('backSummary');
   if(sum) sum.textContent = brand + ' · ' + model + ' · ' + seg;
+  refreshExportSummary();
   window.scrollTo(0,0);
 }
 function goToForm(){
   document.querySelector('.app').classList.remove('step2');
+  document.querySelector('.app').classList.remove('step3');
   window.scrollTo(0,0);
 }
 function maybeAutoStep2(){
@@ -1289,6 +1516,451 @@ function setEqPayment(p){
   rerenderEq();
 }
 
+
+// ===== Export System =====
+function goToExport(){
+  document.querySelector('.app').classList.add('step3');
+  refreshExportSummary();
+  window.scrollTo(0,0);
+}
+function syncCustomer(el, targetId){
+  const t = document.getElementById(targetId);
+  if(t) t.value = el.value;
+  refreshExportSummary();
+}
+
+function collectExportData(){
+  if(_recordOverride) return _recordOverride;
+  const custName  = (document.getElementById('custNameM')?.value || document.getElementById('custName')?.value || '').trim();
+  const custAddr  = (document.getElementById('custAddrM')?.value || document.getElementById('custAddr')?.value || '').trim();
+  const custPhone = (document.getElementById('custPhoneM')?.value || document.getElementById('custPhone')?.value || '').trim();
+  const branch    = (document.getElementById('branchNameM')?.value || document.getElementById('branchName')?.value || '').trim();
+
+  const model = modelSelect.value;
+  const brand = currentBrand === 'yanmar' ? 'Yanmar' : 'Solis';
+  const seg   = currentSegment;
+
+  // Get best card entry
+  const rows = findEntries(currentBrand, model, currentSegment, toggleState);
+  const deduped = dedupeWithinSameCustomerOut(rows, model);
+  const {best} = pickBestAndRest(deduped);
+  const e = best?.entry || {};
+  const progName = best?.program?.name || '-';
+
+  const price     = e.price || 0;
+  const down      = (e.down || 0) + Math.max(0, extraDown);
+  const support   = (e.yct||0) + (e.ysp||0) + (e.fire||0) + (e.ysp_topup||0);
+  const custOut   = Math.max(0, (e.customer_out||0) + Math.max(0, extraDown));
+  const rst       = e.rst || 0;
+  const finYears  = tractorYears || e.years || (currentBrand==='yanmar'?10:7);
+  const finRate   = lookupInterest(currentBrand, currentSegment, finYears, tractorPayment);
+  const finTotal  = Math.max(0, (e.total ?? (price-e.down||0)) - Math.max(0,extraDown));
+  const annualFull= finTotal * (1/finYears + finRate);
+  const minor     = getMinorFromPayment(tractorPayment);
+  const bigPay    = Math.max(0, annualFull - minor*11);
+
+  // Equipment
+  const eqItems = getEquipmentForModel(currentBrand, model);
+  const selectedEqList = [];
+  let eqTotalPrice = 0;
+  Object.keys(selectedEqSet).forEach(idx=>{
+    const item = eqItems[Number(idx)];
+    if(!item) return;
+    const useSpec = selectedEqSet[idx] && !!item.special;
+    const p = useSpec ? item.special : item.price;
+    eqTotalPrice += p;
+    selectedEqList.push({name: item.name, price: p});
+  });
+  const eqFinYears = eqYears || finYears;
+  const eqFinRate  = lookupInterest(currentBrand, currentSegment, eqFinYears, eqPayment);
+  const eqDown2    = Math.max(0, eqDown);
+  const eqFinTotal = Math.max(0, eqTotalPrice - eqDown2);
+  const eqAnnual   = eqFinTotal > 0 ? Math.round(eqFinTotal * (1/eqFinYears + eqFinRate)) : 0;
+
+  // Gifts
+  const gifts = best?.program?.gifts || [];
+
+  return {
+    custName, custAddr, custPhone, branch, model, brand, seg, progName,
+    price, down, support, custOut, rst,
+    finYears, finRate, finTotal: Math.round(finTotal), annualFull: Math.round(annualFull),
+    minor, bigPay: Math.round(bigPay), tractorPayment,
+    eqItems: selectedEqList, eqTotalPrice, eqDown: eqDown2,
+    eqFinTotal: Math.round(eqFinTotal), eqAnnual, eqFinYears, eqFinRate, eqPayment,
+    gifts,
+    yct: e.yct||0, ysp: e.ysp||0, fire: e.fire||0,
+    totalDown: down, date: new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'}),
+  };
+}
+
+function refreshExportSummary(){
+  const d = collectExportData();
+  const html = `<div class="export-summary">
+    <div class="es-row"><span class="es-label">รุ่นรถ</span><span class="es-val">${d.model}</span></div>
+    <div class="es-row"><span class="es-label">โปร</span><span class="es-val">${d.progName}</span></div>
+    <div class="es-row"><span class="es-label">ราคารถ</span><span class="es-val">${fmt(d.price)} บาท</span></div>
+    <div class="es-row"><span class="es-label">เงินดาวน์รวม</span><span class="es-val">${fmt(d.down)} บาท</span></div>
+    <div class="es-row"><span class="es-label">ยอดจัด (รถ)</span><span class="es-val">${fmt(d.finTotal)} บาท</span></div>
+    <div class="es-row"><span class="es-label">งวดใหญ่ (รถ)</span><span class="es-val">${fmt(d.bigPay)} บาท/${d.finYears} ปี</span></div>
+    ${d.eqItems.length>0?`<div class="es-row"><span class="es-label">ยอดจัด (อุปกรณ์)</span><span class="es-val">${fmt(d.eqFinTotal)} บาท</span></div>`:''}
+    ${d.eqAnnual>0?`<div class="es-row"><span class="es-label">งวดอุปกรณ์</span><span class="es-val">${fmt(d.eqAnnual)} บาท/${d.eqFinYears} ปี</span></div>`:''}
+  </div>`;
+  ['exportSummaryBox','exportSummaryBoxM'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.innerHTML = html;
+  });
+}
+
+// ===== PDF / Print =====
+function exportPDF(){
+  const d = collectExportData();
+  if(!_recordOverride) saveToHistory(d);
+  const totalRacarom = d.price + d.eqTotalPrice;
+
+  // Build installment schedule: total periods = finYears*12
+  // Payment: months 1-11 = minor, month 12 = bigPay (per year cycle)
+  // With minor=0 (monthly_3m): every month = annualFull/12 (simplified)
+  function buildSchedule(finYears, bigPay, minor, paymentType){
+    const rows = [];
+    const totalPeriods = finYears * 12;
+    for(let i=1; i<=totalPeriods; i++){
+      const monthInYear = ((i-1)%12)+1;
+      let amt;
+      if(paymentType === 'monthly_3m') amt = Math.round(d.annualFull/12);
+      else amt = (monthInYear===12) ? bigPay : minor;
+      rows.push({period: i, amt});
+    }
+    return rows;
+  }
+  const schedule = buildSchedule(d.finYears, d.bigPay, d.minor, d.tractorPayment);
+
+  // Format schedule as 5-column table (match the handwritten form layout)
+  function scheduleTableHtml(rows){
+    const cols = 5;
+    const perCol = Math.ceil(rows.length / cols);
+    let colsHtml = '';
+    for(let c=0; c<cols; c++){
+      const slice = rows.slice(c*perCol, (c+1)*perCol);
+      colsHtml += `<td style="vertical-align:top;padding:0 4px;width:20%"><table style="width:100%;border-collapse:collapse;font-size:8.5pt">`;
+      slice.forEach(r=>{
+        const bold = (r.period%12===0) || (r.period === rows.length);
+        colsHtml += `<tr><td style="padding:1px 0;color:#555;width:28px">ที่ ${r.period}</td><td style="padding:1px 0;text-align:right;font-weight:${bold?'bold':'normal'}">${fmt(r.amt)}</td></tr>`;
+      });
+      colsHtml += `</table></td>`;
+    }
+    return `<table style="width:100%;border-collapse:collapse"><tr>${colsHtml}</tr></table>`;
+  }
+
+  const printHtml = `
+    <div style="font-family:'Sarabun',sans-serif;font-size:10pt;color:#111;max-width:720px;margin:0 auto;padding:12px 16px">
+      <div style="text-align:center;margin-bottom:6px">
+        <div style="font-size:13pt;font-weight:bold">สินไทยแทรกเตอร์ ${d.branch ? '— '+d.branch : ''}</div>
+        <div style="font-size:9pt;color:#555">ใบสรุปเช่าซื้อ วันที่ ${d.date}</div>
+      </div>
+      <hr style="border:0.5px solid #ccc;margin:6px 0">
+
+      <table style="width:100%;border-collapse:collapse;margin-bottom:8px">
+        <tr>
+          <td style="width:50%;padding:2px 0"><b>ชื่อลูกค้า:</b> ${d.custName||'....................................'}</td>
+          <td style="width:50%;padding:2px 0"><b>กลุ่มลูกค้า:</b> ${d.seg} (${d.brand})</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding:2px 0"><b>ที่อยู่:</b> ${d.custAddr||'........................................................................................................'}</td>
+        </tr>
+        <tr>
+          <td style="padding:2px 0"><b>เบอร์โทร:</b> ${d.custPhone||'....................................'}</td>
+          <td style="padding:2px 0"><b>โปร:</b> ${d.progName}</td>
+        </tr>
+      </table>
+
+      <table style="width:100%;border-collapse:collapse;border:0.5px solid #bbb;margin-bottom:8px">
+        <thead><tr style="background:#f0ede8">
+          <th style="padding:4px 6px;text-align:left;font-size:9.5pt;border:0.5px solid #bbb">ประเภทสินค้า</th>
+          <th style="padding:4px 6px;text-align:left;font-size:9.5pt;border:0.5px solid #bbb">รุ่น</th>
+          <th style="padding:4px 6px;text-align:right;font-size:9.5pt;border:0.5px solid #bbb">ราคา</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td style="padding:4px 6px;border:0.5px solid #bbb">รถแทรกเตอร์</td>
+            <td style="padding:4px 6px;border:0.5px solid #bbb">${d.model}</td>
+            <td style="padding:4px 6px;text-align:right;border:0.5px solid #bbb">${fmt(d.price)}</td>
+          </tr>
+          ${d.eqItems.map(eq=>`<tr>
+            <td style="padding:4px 6px;border:0.5px solid #bbb">อุปกรณ์</td>
+            <td style="padding:4px 6px;border:0.5px solid #bbb">${eq.name}</td>
+            <td style="padding:4px 6px;text-align:right;border:0.5px solid #bbb">${fmt(eq.price)}</td>
+          </tr>`).join('')}
+          <tr style="background:#f0ede8;font-weight:bold">
+            <td colspan="2" style="padding:4px 6px;border:0.5px solid #bbb">ราคารวมทั้งสิ้น</td>
+            <td style="padding:4px 6px;text-align:right;border:0.5px solid #bbb">${fmt(totalRacarom)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table style="width:100%;border-collapse:collapse;margin-bottom:8px;font-size:9.5pt">
+        <tr>
+          <td style="padding:2px 0;width:50%">ทำสัญญา: <b>รายปี</b> ดอกเบี้ย <b>${(d.finRate*100).toFixed(2)}%</b></td>
+          <td style="padding:2px 0">รูปแบบ: <b>${PAYMENT_LABELS[d.tractorPayment]}</b></td>
+        </tr>
+        <tr>
+          <td style="padding:2px 0">ดาวน์รวม <b>${fmt(d.down)}</b></td>
+          <td style="padding:2px 0">ช่วยดาวน์ <b>${fmt(d.support)}</b></td>
+        </tr>
+        <tr>
+          <td style="padding:2px 0">ยอดจัด (รถ) <b>${fmt(d.finTotal)}</b></td>
+          <td style="padding:2px 0">จ่ายดาวน์จริง <b>${fmt(d.custOut)}</b></td>
+        </tr>
+        ${d.eqItems.length>0 ? `<tr>
+          <td style="padding:2px 0">ยอดจัด (อุปกรณ์) <b>${fmt(d.eqFinTotal)}</b></td>
+          <td style="padding:2px 0">ดาวน์อุปกรณ์ <b>${fmt(d.eqDown)}</b></td>
+        </tr>` : ''}
+      </table>
+
+      <div style="font-size:9pt;font-weight:bold;margin-bottom:3px">ตารางงวดชำระ (รถแทรกเตอร์) — ${d.finYears} ปี × 12 เดือน = ${d.finYears*12} งวด</div>
+      ${scheduleTableHtml(schedule)}
+
+      ${d.eqAnnual > 0 ? `<div style="margin-top:8px;font-size:9.5pt">
+        <b>งวดอุปกรณ์รวม:</b> ${fmt(d.eqAnnual)} บาท/${PAYMENT_LABELS[d.eqPayment]} × ${d.eqFinYears} ปี
+        (ดอกเบี้ย ${(d.eqFinRate*100).toFixed(2)}%)
+      </div>` : ''}
+
+      ${d.gifts.length>0 ? `<div style="margin-top:8px;font-size:9pt">
+        <b>ของแถม ${d.gifts.length} รายการ:</b> ${d.gifts.slice(0,6).join(' · ')}${d.gifts.length>6?` · (+${d.gifts.length-6} รายการ)`:''}
+      </div>` : ''}
+
+      <hr style="border:0.5px solid #ccc;margin:10px 0">
+      <table style="width:100%">
+        <tr>
+          <td style="text-align:center;font-size:9pt">ลงชื่อ .................................<br>ผู้แนะนำ</td>
+          <td style="text-align:center;font-size:9pt">ลงชื่อ .................................<br>ผู้ขาย</td>
+          <td style="text-align:center;font-size:9pt">ลงชื่อ .................................<br>ลูกค้า</td>
+        </tr>
+      </table>
+    </div>`;
+
+  document.getElementById('printArea').innerHTML = printHtml;
+  // Temporarily show print area only
+  document.body.classList.add('printing');
+  window.print();
+  document.body.classList.remove('printing');
+}
+
+// ===== XLSX Export =====
+function exportXLSX(){
+  const d = collectExportData();
+  if(!_recordOverride) saveToHistory(d);
+  if(typeof XLSX === 'undefined'){ alert('กำลังโหลด Excel library...'); return; }
+
+  const wb = XLSX.utils.book_new();
+  const ws_data = [
+    ['ใบสรุปเช่าซื้อ — สินไทยแทรกเตอร์ ' + (d.branch||'')],
+    ['วันที่', d.date],
+    [],
+    ['ข้อมูลลูกค้า'],
+    ['ชื่อ', d.custName],
+    ['ที่อยู่', d.custAddr],
+    ['เบอร์โทร', d.custPhone],
+    [],
+    ['ข้อมูลสินค้า'],
+    ['แบรนด์', d.brand],
+    ['รุ่น', d.model],
+    ['กลุ่มลูกค้า', d.seg],
+    ['โปร', d.progName],
+    ['ราคารถ', d.price],
+    ...d.eqItems.map((eq,i)=>[`อุปกรณ์ ${i+1}`, eq.name, eq.price]),
+    ['ราคารวมทั้งสิ้น', d.price + d.eqTotalPrice],
+    [],
+    ['ข้อมูลการเงิน'],
+    ['เงินดาวน์รวม', d.down],
+    ['ช่วยดาวน์ (YCT/YSP/ไฟไหม้)', d.support],
+    ['จ่ายดาวน์จริง', d.custOut],
+    ['ต้นทุน RST', d.rst],
+    ['ยอดจัด (รถ)', d.finTotal],
+    ['ดอกเบี้ย', (d.finRate*100).toFixed(2)+'%'],
+    ['ระยะเวลา (ปี)', d.finYears],
+    ['รูปแบบผ่อน', PAYMENT_LABELS[d.tractorPayment]],
+    ['งวดใหญ่ต่อปี', d.bigPay],
+    ['งวดย่อยต่อเดือน (11 เดือน)', d.minor],
+    ...(d.eqItems.length>0 ? [
+      [],
+      ['อุปกรณ์ — ยอดจัด', d.eqFinTotal],
+      ['อุปกรณ์ — ดาวน์', d.eqDown],
+      ['อุปกรณ์ — ดอกเบี้ย', (d.eqFinRate*100).toFixed(2)+'%'],
+      ['อุปกรณ์ — ระยะเวลา (ปี)', d.eqFinYears],
+      ['อุปกรณ์ — งวดต่อปี', d.eqAnnual],
+    ] : []),
+    [],
+    ['ของแถม'],
+    ...d.gifts.map(g=>[g]),
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(ws_data);
+  ws['!cols'] = [{wch:28},{wch:40},{wch:16}];
+  XLSX.utils.book_append_sheet(wb, ws, 'ใบสรุป');
+
+  // Installment schedule sheet
+  const sched_data = [['งวดที่','ยอด (บาท)','หมายเหตุ']];
+  const totalPeriods = d.finYears * 12;
+  for(let i=1; i<=totalPeriods; i++){
+    const monthInYear = ((i-1)%12)+1;
+    let amt, note='';
+    if(d.tractorPayment==='monthly_3m'){ amt=Math.round(d.annualFull/12); }
+    else { amt=(monthInYear===12)?d.bigPay:d.minor; note=(monthInYear===12)?'งวดใหญ่':'งวดย่อย'; }
+    sched_data.push([i, amt, note]);
+  }
+  const ws2 = XLSX.utils.aoa_to_sheet(sched_data);
+  ws2['!cols'] = [{wch:10},{wch:16},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'ตารางงวด');
+
+  const fname = (d.custName||'ลูกค้า').replace(/[^ก-๙a-zA-Z0-9]/g,'_') + '_' + d.model.replace(/[^a-zA-Z0-9]/g,'') + '.xlsx';
+  XLSX.writeFile(wb, fname);
+}
+
+
+// ===== History System =====
+const GAS_URL_KEY = 'rst_promo_gas_url';
+let gasUrl = localStorage.getItem(GAS_URL_KEY) || '';
+
+function openHistory(){
+  document.querySelector('.app').classList.add('history');
+  document.querySelector('.app').classList.remove('step2','step3');
+  window.scrollTo(0,0);
+  loadHistory();
+}
+function closeHistory(){
+  document.querySelector('.app').classList.remove('history');
+  window.scrollTo(0,0);
+}
+function openGasConfig(){
+  const box = document.getElementById('gasConfigBox');
+  box.style.display = box.style.display==='none' ? 'block' : 'none';
+  document.getElementById('gasUrlInput').value = gasUrl;
+}
+function saveGasUrl(){
+  gasUrl = document.getElementById('gasUrlInput').value.trim();
+  localStorage.setItem(GAS_URL_KEY, gasUrl);
+  document.getElementById('gasConfigBox').style.display = 'none';
+  loadHistory();
+}
+
+async function saveToHistory(record){
+  if(!gasUrl){ 
+    console.warn('GAS URL not set — skipping save');
+    return null;
+  }
+  try{
+    const res = await fetch(gasUrl, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({action:'save', record})
+    });
+    return true;
+  } catch(err){
+    console.error('Save error:', err);
+    return false;
+  }
+}
+
+async function loadHistory(){
+  const container = document.getElementById('historyListContainer');
+  if(!gasUrl){
+    container.innerHTML = `<div class="gas-config" style="margin:16px">
+      <label>⚠️ ยังไม่ได้ตั้งค่า GAS URL กด ⚙️ ด้านบนเพื่อใส่ URL ของ Google Apps Script</label>
+    </div>`;
+    return;
+  }
+  container.innerHTML = '<div class="history-loading">กำลังโหลดประวัติ...</div>';
+  try{
+    const res = await fetch(gasUrl + '?action=list');
+    const data = await res.json();
+    if(data.status !== 'ok') throw new Error(data.message);
+    renderHistoryList(data.records);
+  } catch(err){
+    container.innerHTML = `<div class="history-empty">⚠️ โหลดไม่ได้: ${err.message}<br><small>เช็ค GAS URL และ permission (Anyone)</small></div>`;
+  }
+}
+
+function renderHistoryList(records){
+  const container = document.getElementById('historyListContainer');
+  if(!records || records.length === 0){
+    container.innerHTML = '<div class="history-empty">ยังไม่มีประวัติ<br><small>Export ครั้งแรกแล้วจะโชว์ที่นี่</small></div>';
+    return;
+  }
+  container.innerHTML = records.map(r => `
+    <div class="history-card" id="hc_${r.id}">
+      <div class="hc-top">
+        <div class="hc-name">${r.custName || '(ไม่ระบุชื่อ)'}</div>
+        <div class="hc-date">${r.savedAt?.slice(0,16) || ''}</div>
+      </div>
+      <div class="hc-model">${r.brand} · ${r.model} · ${r.seg}</div>
+      <div class="hc-nums">
+        โปร: <b>${r.progName}</b> &nbsp;·&nbsp;
+        ยอดจัด: <b>${fmt(Number(r.finTotal)||0)}</b> &nbsp;·&nbsp;
+        งวดใหญ่: <b>${fmt(Number(r.bigPay)||0)}</b> บาท/${r.finYears}ปี
+        ${r.eqTotal ? ` &nbsp;·&nbsp; อุปกรณ์: <b>${fmt(Number(r.eqTotal)||0)}</b>` : ''}
+      </div>
+      ${r.custPhone ? `<div class="hc-nums" style="margin-top:2px">📞 ${r.custPhone} ${r.branch ? '· '+r.branch : ''}</div>` : ''}
+      <div class="hc-actions">
+        <button class="btn-reprint" onclick="reprintRecord('${r.id}')">🖨 พิมพ์ซ้ำ</button>
+        <button class="btn-rexport" onclick="reExportXLSX('${r.id}')">📊 Excel</button>
+        <button class="btn-del" onclick="deleteRecord('${r.id}')">ลบ</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function reprintRecord(id){
+  try{
+    const res = await fetch(gasUrl + '?action=get&id=' + id);
+    const data = await res.json();
+    if(data.status !== 'ok') throw new Error(data.message);
+    // restore data into globals for print
+    _printFromRecord(data.record);
+  } catch(err){
+    alert('โหลดไม่ได้: ' + err.message);
+  }
+}
+
+async function reExportXLSX(id){
+  try{
+    const res = await fetch(gasUrl + '?action=get&id=' + id);
+    const data = await res.json();
+    if(data.status !== 'ok') throw new Error(data.message);
+    _xlsxFromRecord(data.record);
+  } catch(err){
+    alert('โหลดไม่ได้: ' + err.message);
+  }
+}
+
+async function deleteRecord(id){
+  if(!confirm('ลบรายการนี้?')) return;
+  try{
+    const res = await fetch(gasUrl, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({action:'delete', id})
+    });
+    const data = await res.json();
+    if(data.status !== 'ok') throw new Error(data.message);
+    document.getElementById('hc_'+id)?.remove();
+  } catch(err){
+    alert('ลบไม่ได้: ' + err.message);
+  }
+}
+
+// Print/XLSX from stored record data (using existing exportPDF/exportXLSX but with override)
+let _recordOverride = null;
+function _printFromRecord(rec){
+  _recordOverride = rec;
+  exportPDF();
+  _recordOverride = null;
+}
+function _xlsxFromRecord(rec){
+  _recordOverride = rec;
+  exportXLSX();
+  _recordOverride = null;
+}
+
 function getEquipmentForModel(brand, model){
   const map = EQUIPMENT[brand];
   if(!map) return [];
@@ -1409,5 +2081,6 @@ function getCurrentFinParams(){
 
 setBrand('yanmar');
 </script>
+<div id="printArea"></div>
 </body>
 </html>
